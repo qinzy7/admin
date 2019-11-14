@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinzy.admin.server.model.admin.mapper.GameTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qinzy.admin.server.model.admin.entity.GameTask">
+        <id column="id" property="id" />
+        <result column="game_id" property="gameId" />
+        <result column="task_name" property="taskName" />
+        <result column="task_code" property="taskCode" />
+        <result column="num" property="num" />
+        <result column="days" property="days" />
+        <result column="create_date" property="createDate" />
+        <result column="create_user" property="createUser" />
+        <result column="last_update_date" property="lastUpdateDate" />
+        <result column="last_update_user" property="lastUpdateUser" />
+        <result column="delete_flag" property="deleteFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, game_id, task_name, task_code, num, days, create_date, create_user, last_update_date, last_update_user, delete_flag
+    </sql>
+
+</mapper>

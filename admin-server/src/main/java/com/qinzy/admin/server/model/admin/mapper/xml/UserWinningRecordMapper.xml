@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinzy.admin.server.model.admin.mapper.UserWinningRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qinzy.admin.server.model.admin.entity.UserWinningRecord">
+        <id column="id" property="id" />
+        <result column="game_id" property="gameId" />
+        <result column="user_id" property="userId" />
+        <result column="prize_id" property="prizeId" />
+        <result column="winning_date" property="winningDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, game_id, user_id, prize_id, winning_date
+    </sql>
+
+</mapper>

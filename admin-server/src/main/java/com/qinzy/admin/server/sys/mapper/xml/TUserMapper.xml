@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinzy.admin.server.sys.mapper.TUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qinzy.admin.server.sys.entity.TUser">
+        <id column="id" property="id"/>
+        <result column="real_name" property="realName"/>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="locked" property="locked"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, real_name, user_name, password, salt, phone, email, locked,
+         create_date
+    </sql>
+
+    <!--根据用户id查询角色ids-->
+    <select id="getRoleIdsByUserId" resultType="java.lang.Integer">
+        select role_id from t_role_user where user_id = #{id}
+    </select>
+
+    <resultMap id="roleMenuMap" type="com.qinzy.admin.server.sys.entity.TRole">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="desc" property="desc"/>
+        <collection property="menuIds" column="id" select="getMenuIdsByRoleId"
+                    ofType="java.lang.Integer"/>
+    </resultMap>
+
+    <!--根据角色id查询角色信息和菜单-->
+    <select id="getRoleByRoleId" resultMap="roleMenuMap">
+        select
+          r.id,
+          r.name,
+          r.desc
+        from t_role r
+        where r.id = #{roleId}
+    </select>
+
+    <select id="getMenuIdsByRoleId" resultType="java.lang.Integer">
+        select
+          m.id
+        from t_menu m, t_role_menu rm
+        where m.id = rm.menu_id
+        and rm.role_id = #{roleId}
+    </select>
+</mapper>

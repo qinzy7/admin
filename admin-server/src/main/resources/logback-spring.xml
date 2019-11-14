@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <!-- 日志路径 -->
+    <property name="LOG_PATH" value="/data/logs/ift-gateway/"/>
+    <property name="CONSOLE_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(--){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+    <!-- 带请求IP的PATTERN -->
+    <property name="MDC_LOG_PATTERN"
+              value="IP:%X{req.remoteHost} -url:%X{req.requestURI} -Method:%X{req.method} - QueryString:%X{req.queryString} - device:%X{req.userAgent}  -ips:%X{req.xForwardedFor}  - %m%n "/>
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${LOG_PATH}/error/error.log</file>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 归档的日志文件的路径，例如今天是2013-12-21日志，当前写的日志文件路径为file节点指定，
+                可以将此文件与file指定文件路径设置为不同路径，从而将当前日志文件或归档日志文件置不同的目录。
+                而2013-12-21的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引 -->
+            <fileNamePattern>${LOG_PATH}/error/error-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- 除按日志记录之外，还配置了日志文件不能超过256M，若超过256M，日志文件会以索引0开始， 命名日志文件，
+                例如log-error-2013-12-21.0.log -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>256MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- 日志文件的格式 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--<pattern>%-5p [%d][%mdc{mdc_accNo}] %C:%L - %m %n</pattern>-->
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+        <!-- 此日志文件只记录error级别的 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/app.log</file>
+        <!--归档日志 基于时间和文件大小-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 一个月一个文件夹，按大小分文件 -->
+            <FileNamePattern>${LOG_PATH}/%d{yyyy-MM}/%d{yyyy-MM-dd}.%i.log.gz</FileNamePattern>
+            <MaxFileSize>100MB</MaxFileSize>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+    </appender>
+    <!--异步输出-->
+    <appender name="ASYNC_LOG" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改队列深度，该值会影响性能，默认256 -->
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE_ERROR"/>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <!-- dev使用debug -->
+    <springProfile name="dev">
+        <!-- 为单独的包配置日志级别，若root的级别大于此级别， 此处级别也会输出 应用场景：生产环境一般不会将日志级别设置为trace或debug，但是为详细的记录SQL语句的情况，
+                可将hibernate的级别设置为debug，如此一来，日志文件中就会出现hibernate的debug级别日志， 而其它包则会按root的级别输出日志 -->
+        <logger name="org.springframework" level="error"/>
+        <logger name="org.apache.http" level="info"/>
+        <logger name="com.netflix" level="debug"/>
+        <logger name="com.ocean.log" level="debug"/>
+        <!-- hibernate 专用配置 -->
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="DEBUG"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.engine.QueryParameters" level="DEBUG"/>
+        <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG"/>
+        <root level="info">
+            <appender-ref ref="ASYNC_LOG"/>
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- test和默认的配置 -->
+    <springProfile name="test,default">
+        <!-- 为单独的包配置日志级别，若root的级别大于此级别， 此处级别也会输出 应用场景：生产环境一般不会将日志级别设置为trace或debug，但是为详细的记录SQL语句的情况，
+                可将hibernate的级别设置为debug，如此一来，日志文件中就会出现hibernate的debug级别日志， 而其它包则会按root的级别输出日志 -->
+        <logger name="org.springframework" level="error"/>
+        <logger name="com.ocean.log" level="debug"/>
+        <!-- hibernate 专用配置 -->
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="DEBUG"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.engine.QueryParameters" level="DEBUG"/>
+        <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG"/>
+        <root level="info">
+            <appender-ref ref="ASYNC_LOG"/>
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- prod的配置 -->
+    <springProfile name="prod">
+        <!-- 为单独的包配置日志级别，若root的级别大于此级别， 此处级别也会输出 应用场景：生产环境一般不会将日志级别设置为trace或debug，但是为详细的记录SQL语句的情况，
+                可将hibernate的级别设置为debug，如此一来，日志文件中就会出现hibernate的debug级别日志， 而其它包则会按root的级别输出日志 -->
+        <logger name="org.springframework" level="error"/>
+        <logger name="com.ocean.log" level="debug"/>
+        <!-- hibernate 专用配置 -->
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="DEBUG"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.engine.QueryParameters" level="DEBUG"/>
+        <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG"/>
+        <root level="info">
+            <appender-ref ref="ASYNC_LOG"/>
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+</configuration>

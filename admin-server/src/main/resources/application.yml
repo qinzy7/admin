@@ -1,0 +1,71 @@
+server:
+  port: 80
+#  servlet:
+#    context-path: /admin
+
+spring:
+#  resources:
+#    static-locations: classpath:/templates/
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.101.193.93:3306/admin?useUnicode=true&useSSL=false&characterEncoding=utf8
+    username: admin
+    password: admin
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      ##最小空闲
+      minimum-idle: 5
+      ## 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      ## 连接池最大连接数，默认是10
+      maximum-pool-size: 10
+      ## 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+      auto-commit: true
+      ## 连接池母子
+      pool-name: MyHikariCP
+      ## 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+      ## 数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+mybatis-plus:
+  configuration:
+    # 开启下划线转驼峰，默认为true
+    map-underscore-to-camel-case: true
+  mapper-locations:
+    - classpath*:com/qinzy/admin/server/*/mapper/xml/*.xml
+  # 指定mapper.xml中简称的pojo位于哪个包下，
+  # 因为mapper.xml下引用的pojo都为全称，所以无需此配置
+#  type-aliases-package: com.qinzy.admin.server.sys.entity
+
+jwt:
+  privateKey: qinzy7
+  # 有效时间，单位：分
+  ttlMillis: 60
+
+#logging:
+#  level:
+#    root: info
+#    com.qinzy.admin.server: debug
+
+logging:
+  # log配置文件地址
+  config: classpath:logback-spring.xml
+
+---
+spring:
+  profiles: dev
+#mybatis-plus:
+#  configuration:
+#    # mybatis-plus打印SQL日志
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+
+---
+spring:
+  profiles: prod

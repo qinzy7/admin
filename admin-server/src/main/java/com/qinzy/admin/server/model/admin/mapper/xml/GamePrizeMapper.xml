@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinzy.admin.server.model.admin.mapper.GamePrizeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qinzy.admin.server.model.admin.entity.GamePrize">
+        <id column="id" property="id" />
+        <result column="game_id" property="gameId" />
+        <result column="prize_name" property="prizeName" />
+        <result column="prize_level" property="prizeLevel" />
+        <result column="prize_price" property="prizePrice" />
+        <result column="prize_num" property="prizeNum" />
+        <result column="create_date" property="createDate" />
+        <result column="create_user" property="createUser" />
+        <result column="last_update_date" property="lastUpdateDate" />
+        <result column="last_update_user" property="lastUpdateUser" />
+        <result column="delete_flag" property="deleteFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, game_id, prize_name, prize_level, prize_price, prize_num, create_date, create_user, last_update_date, last_update_user, delete_flag
+    </sql>
+
+</mapper>
